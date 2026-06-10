@@ -1,0 +1,4 @@
+sem1 = {'CP': '4', 'IEEE': '4', 'EVS': '1', 'Comms': '3', 'Maths1': '4', 'Orientation': '1', 'Intro': '1', 'Physics': '1'}
+sem2 = {'Maths2': '4', 'Chem': '4', 'ED': '4', 'UHV': '1', 'IOT': '2', 'Product design': '2', 'Mechatronics': '4'}
+sem3 = {'NnS': '4', 'MnI': '4', 'EM1': '4', 'PSE': '4', 'Swayam': '3', 'Wadhwani': '3'}
+sem4 = {'ADE': '4', 'EM2': '4', 'CS': '4', 'PSA': '4', 'PE': '4', 'RET': '4'}
