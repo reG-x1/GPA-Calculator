@@ -145,4 +145,4 @@ class Student_Record(semester):
         
         cgpa = (grand_sum/total_creds)
                         
-        print(f"CGPA for curriculum is = {cgpa:.2f}")              
+        print(f"CGPA for curriculum is = {cgpa:.2f}")
