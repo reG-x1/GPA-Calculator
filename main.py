@@ -86,7 +86,7 @@ class Student_Record(semester):
         return Master_dict
     
     def asking_grades(self):
-        Master_dict = self.retreiving_dict()
+        Master_dict = self.subject_dict
 
         grades = {}
         for sem in Master_dict:
