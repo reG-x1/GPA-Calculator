@@ -1,21 +1,54 @@
 class Record:
 
     Grade_eq = {"A+": 10, "A": 9, "B+": 8, "B": 7, "C+": 6, "C": 5, "D": 4 }
+    branches_avail = ('CS','DS','AI/ML','Aero','ECE','VLSI','Ele','Mech','Civil','Prod','Meta')
     
-    def __init__(self):
-        pass
+    def __init__(self,name,branch,batch):
+        self.name = name
+        self.branch = branch
+        self.batch = batch
+        self.sem = self.deducing_sems()
 
     def __str__(self):
         pass
 
+    def add_course_data(self):
+        branch = self.__branch
 
+    def deducing_sems(self,year):
+        year = self.__batch
+
+        from datetime import datetime
+
+        current_time = datetime.now()
+        current_year = current_time.year
+        current_month = current_time.month
+        join_year = year - 4
+
+        sems = 0
+
+        for year in range(join_year,current_year+1):
+                
+            if year < current_year:
+                if year == join_year:
+                    sems +=1
+                else:
+                    sems +=2
+            
+            elif year == current_year:
+                if current_year == join_year and current_month <8:
+                    pass
+
+                elif current_month <8:
+                    sems +=1
+                else:
+                    sems +=2
+        return sems   
 
 
 class Student(Record):
-    def __init__(self,name,branch,sem):
-        self.__name = name
-        self.__branch = branch
-        self.__sem = sem
+    def __init__(self,name,branch,batch):
+        super().__init__(name,branch,batch)
         
         self.menu()
 
@@ -25,7 +58,7 @@ class Student(Record):
     def menu(self):
         print(f"========================= HOME =========================")
         print(f"Select from the following modes: ")
-        print(f"1. View Course Info\n2. View Student Info\n3. Check your rank\n4. Others\n5. Exit")
+        print(f"1. View/Edit Course Info\n2. View Student Info\n3. Check your rank\n4. Others\n5. Exit")
         
         try:
             mode = int(input("Enter the mode: "))
