@@ -1,0 +1,74 @@
+{
+    "2028": {
+        "Ele": {
+            "sem1": {
+                "CP": 4,
+                "IEEE": 4,
+                "EVS": 1,
+                "Comms": 3,
+                "Calculus": 4,
+                "Orientation": 1,
+                "Intro": 1,
+                "Physics": 4
+            },
+            "sem2": {
+                "Algebra": 4,
+                "Chem": 4,
+                "ED": 4,
+                "UHV": 1,
+                "Skill Dev": 2,
+                "Prod Design": 2,
+                "Mecha": 4
+            },
+            "sem3": {
+                "NNS": 4,
+                "MNI": 4,
+                "EM1": 4,
+                "PSE": 4,
+                "Swayam": 3,
+                "MHN": 3
+            },
+            "sem4": {
+                "ADE": 4,
+                "EM2": 4,
+                "PSA": 4,
+                "PE": 4,
+                "CS": 4,
+                "RET": 4
+            }
+        },
+        "Mech": {
+            "sem1": {
+                "Eng": 4,
+                "Hindi": 4,
+                "Maths": 3
+            },
+            "sem2": {
+                "CAD": 4
+            },
+            "sem3": {
+                "Fluid": 4
+            },
+            "sem4": {
+                "CAD": 3
+            }
+        },
+        "ECE": {
+            "sem1": {
+                "Math": 4,
+                "Comms": 3
+            }
+        }
+    },
+    "2029": {
+        "Ele": {
+            "sem1": {
+                "a": 2,
+                "b": 3
+            },
+            "sem2": {
+                "c": 1
+            }
+        }
+    }
+}
