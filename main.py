@@ -1,8 +1,10 @@
-class Record:
+import json,os
 
+class Record:
     Grade_eq = {"A+": 10, "A": 9, "B+": 8, "B": 7, "C+": 6, "C": 5, "D": 4 }
     branches_avail = ('CS','DS','AI/ML','Aero','ECE','VLSI','Ele','Mech','Civil','Prod','Meta')
-    
+    avail_sem = ["sem1","sem2","sem3","sem4","sem5","sem6","sem7","sem8"]
+
     def __init__(self,name,branch,batch):
         self.name = name
         self.branch = branch
@@ -13,10 +15,44 @@ class Record:
         pass
 
     def add_course_data(self):
-        branch = self.__branch
+        branch = self.branch
+        batch = str(self.batch)
+        sem = int(self.sem)
 
-    def deducing_sems(self,year):
-        year = self.__batch
+        CourseDict = self._file_opening()                                              # HELPER 1
+        CourseDict = self._shell_creation(CourseDict,branch,batch)                     # HELPER 2
+        rem_branch_data = self._finding_missing_sems(CourseDict,branch,batch,sem)      # HELPER 3
+
+        for missing_sem in rem_branch_data:
+            i = 0
+            course_list = []
+            cred_list = []
+
+            print(f"\nEntering {missing_sem} details:")
+            while True:
+                i +=1
+                new_course = input(f"Add {i}th Course or press [ENTER] to save this sem: ")
+                if new_course == '':
+                    break
+                course_credit = int(input("and its credit: "))
+
+                course_list.append(new_course)
+                cred_list.append(course_credit)
+            
+            new_course_dict = dict(zip(course_list,cred_list))
+            CourseDict[batch][branch][missing_sem] = new_course_dict
+
+            try:
+                with open("CourseDict.tmp",'w') as f:
+                    json.dump(CourseDict,f,indent=4)
+                os.replace("CourseDict.tmp","CourseDict.json")
+                print(f"{missing_sem} data saved successfully!")
+            
+            except Exception as e:
+                print(f"CRITICAL ERROR! : Could not save data.\nReason: {e}")
+
+    def deducing_sems(self):
+        year = self.batch
 
         from datetime import datetime
 
@@ -45,12 +81,40 @@ class Record:
                     sems +=2
         return sems   
 
+    def _file_opening(self):
+        with open("CourseDict.json",'r') as f:
+            CourseDict = json.load(f)
+        return CourseDict
+    
+    def _shell_creation(self,CourseDict,branch,batch):
+
+        if batch not in CourseDict:
+            CourseDict[batch] = {}
+
+        if branch not in CourseDict:
+            CourseDict[batch][branch] = {}
+
+        return CourseDict 
+
+    def _finding_missing_sems(self,CourseDict,branch,batch,sem):
+
+        batch_data = CourseDict[batch]
+        branch_data = batch_data[branch]
+
+        expected_sems = Record.avail_sem[:sem]
+        missing_sems = []
+        for curr_sem in expected_sems:
+            if curr_sem not in branch_data.keys():
+                missing_sems.append(curr_sem)
+        rem_branch_data = {key:dict() for key in missing_sems}
+        
+        return rem_branch_data     
 
 class Student(Record):
     def __init__(self,name,branch,batch):
         super().__init__(name,branch,batch)
         
-        self.menu()
+        #self.menu()
 
     def __str__(self):
         pass
@@ -104,4 +168,7 @@ class Student(Record):
         pass
 
 
-user1 = Student("Naveen", "Ele", 4)
+user1 = Student("Naveen", "Ele", 2028)
+print(user1.sem)
+
+print(user1.add_course_data())
