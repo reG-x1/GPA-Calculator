@@ -8,7 +8,7 @@ class Record:
     def __init__(self,name,branch,batch):
         self.name = name
         self.branch = branch
-        self.batch = batch
+        self.batch = str(batch)
         self.sem = self.deducing_sems()
 
     def __str__(self):
@@ -19,10 +19,10 @@ class Record:
         batch = str(self.batch)
         sem = int(self.sem)
 
-        CourseDict = self._file_opening()                                              # HELPER 1
+        CourseDict = self._file_opening("CourseDict.json")                             # HELPER 1
         CourseDict = self._shell_creation(CourseDict,branch,batch)                     # HELPER 2
         rem_branch_data = self._finding_missing_sems(CourseDict,branch,batch,sem)      # HELPER 3
-
+        
         if not rem_branch_data:
             print(f"All courses already registered for {branch} {batch}!")
             print("(switch to mode1 to view or mode5 to edit the Course details.)")
@@ -57,19 +57,19 @@ class Record:
                 print(f"CRITICAL ERROR! : Could not save data.\nReason: {e}")
 
     def deducing_sems(self):
-        year = self.batch                   # graduating year
+        grad_year = int(self.batch)                   # graduating year
 
         from datetime import datetime
 
         current_time = datetime.now()
         current_year = current_time.year
         current_month = current_time.month
-        join_year = year - 4
+        join_year = grad_year - 4
 
-        if current_year > year:
+        if current_year > grad_year:
             return 8
+        
         sems = 0
-
         for year in range(join_year,current_year+1):
                 
             if year < current_year:
@@ -88,11 +88,20 @@ class Record:
                     sems +=2
         return sems   
 
-    def _file_opening(self):
-        with open("CourseDict.json",'r') as f:
-            CourseDict = json.load(f)
-        return CourseDict
+    def _file_opening(self,file_name:str):
+        with open(file_name,'r') as f:
+            fileDict = json.load(f)
+        return fileDict
     
+    def _file_writing(self,data_to_write,file_name:str):
+        try:  
+            with open("file_exchange.tmp",'w') as f:
+                json.dump(data_to_write,f,indent=4)
+            os.replace("file_exchange.tmp",file_name)
+        except Exception as e:
+            print(f"Critical ERROR!! Could not save {file_name}.")
+            print(f"Reason: {e}")
+
     def _shell_creation(self,CourseDict,branch,batch):
 
         if batch not in CourseDict:
@@ -116,9 +125,11 @@ class Record:
         
         return rem_branch_data     
 
+
 class Student(Record):
-    def __init__(self,name,branch,batch):
+    def __init__(self,name,sid:int,branch,batch):
         super().__init__(name,branch,batch)
+        self.sid = str(sid)
 
     def __str__(self):
         pass
@@ -126,8 +137,9 @@ class Student(Record):
     def menu(self):
         print(f"========================= HOME =========================")
         print(f"Select from the following modes: ")
-        print("1. View Course Info\n2. Add Course Info\n3. View Student Info")
-        print("4. View Rankings\n5. Others\n6. Exit")
+        print("1. View Course Info\n2. Add Course Info\n3. View Student Profile")
+        print("4. Add student grades\n5. Edit grades\n6. View branch-Rankings")
+        print("7. View batch rankings\n8. Exit")
         
         try:
             mode = int(input("\nEnter the mode: "))
@@ -146,14 +158,21 @@ class Student(Record):
                 self.StudentInfo()
 
             elif mode == 4:
-                self.Rankings()
+                self.add_grades()
 
             elif mode == 5:
-                self.others()
+                self.edit_grades()
 
             elif mode == 6:
-                print("Thanks for visiting!!")
+                self.branch_rankings()
 
+            elif mode == 7:
+                self.batch_rankings()
+
+            elif mode == 8:
+                print("\nThanks for visiting!")
+                print("_"*40)
+            
             else:
                 print("MODE NOT FOUND!!!")
                 print("No such modes available, please select from the availabe modes.\n")
@@ -175,13 +194,77 @@ class Student(Record):
                 for course_name,credits in courses.items():
                     print(f"  {course_name:<16} | {credits}")
                 print()
+            print("-"*40)
         except KeyError:
             print(f"No Data Availabe.\n(Switch to Mode 2 to add course details.)")
 
     def StudentInfo(self):
+        sid = str(self.sid)
+        name = self.name
+        branch = self.branch
+        batch = self.batch
+
+        StudentRecord = self._Student_shell()                   # HELPER
+
+    def _Student_shell(self):
+        StudentRecord = self._file_opening("StudentRecord.json")
+        if self.sid not in StudentRecord:
+            StudentRecord[self.sid] = {
+                "Name":self.name,
+                "Branch":self.branch,
+                "Batch":self.batch,
+                "Grades":{},
+                "SGPA":{},
+                "CGPA":None
+                }
+        try:  
+            with open("StudentRecord.tmp",'w') as f:
+                json.dump(StudentRecord,f,indent=4)
+            os.replace("StudentRecord.tmp","StudentRecord.json")
+        except Exception as e:
+            print(f"Critical ERROR!! Could not save Student record.")
+            print(f"Reason: {e}")
+
+        return StudentRecord
+
+    def add_grades(self):
+        batch = self.batch
+        branch = self.branch
+        StudentRecord = self._Student_shell()                   # HELPER
+
+        CourseDict = self._file_opening("CourseDict.json")
+        all_sem_data = CourseDict[batch][branch]
+        new_grades_added = False
+
+        for sem in all_sem_data:
+            if sem not in StudentRecord[self.sid]["Grades"]:
+                StudentRecord[self.sid]["Grades"][sem] = {}
+
+            if StudentRecord[self.sid]["Grades"][sem] == {}:
+                print(f"\n===== {sem.upper()} GRADES =====")
+                each_sem_data = all_sem_data[sem]
+                for subject in each_sem_data:
+                    sub_grade = (input(f"{subject}: ")).upper()
+                    StudentRecord[self.sid]["Grades"][sem][subject] = sub_grade
+                new_grades_added = True
+            
+            else:
+                print(f"Grades already saved for {sem}.")
+        if new_grades_added:
+            self._file_writing(StudentRecord,"StudentRecord.json")
+            print("\nGrades saved successfully.")
+
+        else:
+            print("\nAll sem grades are already saved.")
+            print("(switch to mode 5 to edit existing grades)")
+
+    def edit_grades(self):
         pass
 
-    def Rankings(self):
+    def branch_rankings(self):
+        pass
+    
+    def batch_rankings(self):
         pass
 
     def others(self):
@@ -194,6 +277,5 @@ class Student(Record):
         pass
 
 
-s1 = Student("Naveen", "Ele", 2028)
-s2 = Student("Avijit","Mech",2028)
-s3 = Student("Rudra","Ele", 2029)
+s1 = Student("Naveen Kumar",24104101,"Ele",2028)
+s1.add_grades()

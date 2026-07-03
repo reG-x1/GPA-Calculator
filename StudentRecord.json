@@ -1,0 +1,46 @@
+{
+    "24104101": {
+        "Name": "Naveen Kumar",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {
+            "sem1": {
+                "CP": "B+",
+                "IEEE": "B+",
+                "EVS": "C+",
+                "Comms": "B",
+                "Calculus": "C+",
+                "Orientation": "A",
+                "Intro": "A+",
+                "Physics": "B"
+            },
+            "sem2": {
+                "Algebra": "C+",
+                "Chem": "B+",
+                "ED": "A+",
+                "UHV": "B+",
+                "Skill Dev": "A+",
+                "Prod Design": "A+",
+                "Mecha": "B+"
+            },
+            "sem3": {
+                "NNS": "C+",
+                "MNI": "B",
+                "EM1": "B+",
+                "PSE": "A+",
+                "Swayam": "D",
+                "MHN": "B"
+            },
+            "sem4": {
+                "ADE": "B+",
+                "EM2": "A",
+                "PSA": "B+",
+                "PE": "C",
+                "CS": "B+",
+                "RET": "A"
+            }
+        },
+        "SGPA": {},
+        "CGPA": null
+    }
+}
