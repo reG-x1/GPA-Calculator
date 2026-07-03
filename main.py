@@ -11,9 +11,6 @@ class Record:
         self.batch = str(batch)
         self.sem = self.deducing_sems()
 
-    def __str__(self):
-        pass
-
     def add_course_data(self):
         branch = self.branch
         batch = str(self.batch)
@@ -47,14 +44,7 @@ class Record:
             new_course_dict = dict(zip(course_list,cred_list))
             CourseDict[batch][branch][missing_sem] = new_course_dict
 
-            try:
-                with open("CourseDict.tmp",'w') as f:
-                    json.dump(CourseDict,f,indent=4)
-                os.replace("CourseDict.tmp","CourseDict.json")
-                print(f"{missing_sem.upper()} data saved successfully!")
-            
-            except Exception as e:
-                print(f"CRITICAL ERROR! : Could not save data.\nReason: {e}")
+            self._file_writing(CourseDict,"CourseDict.json")
 
     def deducing_sems(self):
         grad_year = int(self.batch)                   # graduating year
@@ -132,14 +122,14 @@ class Student(Record):
         self.sid = str(sid)
 
     def __str__(self):
-        pass
+        self.StudentInfo()
  
     def menu(self):
         print(f"========================= HOME =========================")
         print(f"Select from the following modes: ")
         print("1. View Course Info\n2. Add Course Info\n3. View Student Profile")
-        print("4. Add student grades\n5. Edit grades\n6. View branch-Rankings")
-        print("7. View batch rankings\n8. Exit")
+        print("4. Add student grades\n5. Edit grades\n6. View Rankings")
+        print("7. not decied yet>>>>>\n8. Exit")
         
         try:
             mode = int(input("\nEnter the mode: "))
@@ -155,19 +145,22 @@ class Student(Record):
                 self.add_course_data()
 
             elif mode == 3:
+                self.gpa_calculate()
                 self.StudentInfo()
-
+                
             elif mode == 4:
                 self.add_grades()
+                self.gpa_calculate()
 
             elif mode == 5:
                 self.edit_grades()
+                self.gpa_calculate()
 
             elif mode == 6:
-                self.branch_rankings()
+                self.Rankings()
 
             elif mode == 7:
-                self.batch_rankings()
+                pass
 
             elif mode == 8:
                 print("\nThanks for visiting!")
@@ -242,6 +235,12 @@ class Student(Record):
 
             if StudentRecord[self.sid]["Grades"][sem] == {}:
                 print(f"\n===== {sem.upper()} GRADES =====")
+                choice = input(f"Enter grades for {sem} now? (Y/N): ").strip().upper()
+
+                if choice != "Y":
+                    print(f"Skipping {sem}......")
+                    continue
+
                 each_sem_data = all_sem_data[sem]
                 for subject in each_sem_data:
                     sub_grade = (input(f"{subject}: ")).upper()
@@ -261,21 +260,45 @@ class Student(Record):
     def edit_grades(self):
         pass
 
-    def branch_rankings(self):
+    def Rankings(self):
         pass
     
-    def batch_rankings(self):
-        pass
+    def gpa_calculate(self):
+        StudentRecord = self._file_opening("StudentRecord.json")
+        CourseDict = self._file_opening("CourseDict.json")
+        all_sem_grades = StudentRecord[self.sid]["Grades"]
+        all_sem_creds = CourseDict[self.batch][self.branch]
 
-    def others(self):
-        pass
+        grand_creds = 0
+        grand_sum_of_product = 0
 
-    def sgpa_calculate(self):
-        pass
+        for sem in all_sem_grades.keys():
+            sub_grade_pairs = all_sem_grades[sem]
+            sub_cred_pairs = all_sem_creds[sem]
 
-    def cgpa_calculate(self):
-        pass
+            sem_creds = 0
+            sum_of_prod = 0
 
+            for sub in sub_grade_pairs:
+
+                grade = sub_grade_pairs[sub]
+                eq_grad = Record.Grade_eq[grade] 
+                creds = sub_cred_pairs[sub]
+                
+                product = creds*eq_grad
+                
+                sem_creds += creds
+                sum_of_prod += product
+
+            sgpa = sum_of_prod/sem_creds
+            StudentRecord[self.sid]["SGPA"][sem] = round(sgpa,2)
+
+            grand_creds += sem_creds
+            grand_sum_of_product += sem_creds*sgpa
+        
+        cgpa = grand_sum_of_product/grand_creds
+        StudentRecord[self.sid]["CGPA"] = round(cgpa,2)
+        self._file_writing(StudentRecord,"StudentRecord.json")
 
 s1 = Student("Naveen Kumar",24104101,"Ele",2028)
-s1.add_grades()
+s1.menu()
