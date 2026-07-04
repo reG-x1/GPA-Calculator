@@ -258,12 +258,58 @@ class Student(Record):
             print(f"No Data Availabe.\n(Switch to Mode 2 to add course details.)")
 
     def StudentInfo(self):
-        sid = str(self.sid)
-        name = self.name
-        branch = self.branch
-        batch = self.batch
-
+        sid = self.sid
         StudentRecord = self._Student_shell()                   # HELPER
+        user = StudentRecord[sid]
+
+        while True:
+            print("="*45)
+            print(" "*14+"STUDENT DASHBOARD")
+            print("="*45)
+
+            print(f"Name          : {user["Name"]}")
+            print(f"SID           : {self.sid}")
+            print(f"Program       : {user["Branch"]} {user["Batch"]}")
+            print(f"Current sem   : {self.sem}")
+            print("-"*45)
+
+            print(f"Current CGPA: {user["CGPA"]}" + " "*9 + f"Target CGPA : {user["Target CGPA"]}")
+            print("-"*45)
+            print(f"Semwise SGPA: ")
+
+            if not user["SGPA"]:
+                print(" "*13 + "Nothing to show yet")
+            else:
+                for sem,sg in user["SGPA"].items():                
+                    print(f"{sem.upper()}: {sg}")
+            print("="*45)
+
+            print(" "*18 +"MINI MENU")
+            print(f"[1] View Detailed Semester Grades")
+            print(f"[2] Set 'Target CGPA'")
+            print(f"[3] Return Main Menu")
+            print(f"[4] Exit app")
+            choice = (input("Select an option: "))
+            print()
+
+            if choice == "1":
+                pass
+            elif choice == "2":
+                try:
+                    target_cg = float(input("Enter your target CGPA: "))
+                    user["Target CGPA"] = round(target_cg,2)
+                    self._file_writing(StudentRecord,"StudentRecord.json")
+                    print("Target CGPA saved successfully.")
+                except ValueError:
+                    print("Invalid input! Please enter a numeric decimal value.")
+            elif choice == "3":
+                self.menu()
+            elif choice == "4":
+                exit()
+            else:
+                print("Invalid Option! Choose a number from 1 to 4")
+            print("="*45)
+
 
     def _Student_shell(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -274,7 +320,8 @@ class Student(Record):
                 "Batch":self.batch,
                 "Grades":{},
                 "SGPA":{},
-                "CGPA":None
+                "CGPA":None,
+                "Target CGPA":None
                 }
         try:  
             with open("StudentRecord.tmp",'w') as f:
@@ -324,8 +371,47 @@ class Student(Record):
             print("(switch to mode 5 to edit existing grades)")
 
     def edit_grades(self):
-        pass
+        StudentRecord = self._file_opening("StudentRecord.json")
+        grades = StudentRecord[self.sid]["Grades"]
 
+        target_sem = input("Which sem grades do you want to update?: ")
+        if target_sem not in grades:
+            print(f"ERROR! No grades found for {target_sem}.")
+            return
+
+        print("\n"+"="*20 + f" UPDATING GRADES for {target_sem.upper()} "+"="*20)
+        print("(press ENTER to skip and anything else to edit the current)\n")
+        i =0
+        change = False
+        for sub,grade in grades[target_sem].items():
+            i+=1
+            
+            print(f"{i}. {sub}: {grade}")
+            intent = input("skip? ")
+            if intent == "":
+                continue
+
+            while True:
+                updated_grade = input(f"\nEnter updated grade for {sub}: ").upper()
+                if updated_grade in Record.Grade_eq:
+                    grades[target_sem][sub] = updated_grade
+                    print(f"Grade for {sub} updated successfully.")
+                    print(f"{sub}: '{grade}' --> '{updated_grade}'\n")
+                    change = True
+                    break
+                else:
+                    print(f"Invalid Grade! Please enter valid grade (eg. A+, A, B+.....)")
+
+        self._file_writing(StudentRecord,"StudentRecord.json")
+        if change:
+            print(f"Grades updated for {target_sem}...")
+        else:
+            print("No updates were made.")
+        print("="*45)
+
+    def view_grades(self):
+        pass 
+    
     def Rankings(self):
         pass
     
@@ -372,4 +458,5 @@ class Student(Record):
 s1 = Student("Naveen Kumar",24104101,"Ele",2028)
 s2 = Student("Avijit", 24107068,"Mech",2028)
 
-s1.menu()
+
+s1.StudentInfo()

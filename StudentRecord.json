@@ -46,6 +46,16 @@
             "sem3": 7.14,
             "sem4": 7.83
         },
-        "CGPA": 7.67
+        "CGPA": 7.67,
+        "Target CGPA": 8.5
+    },
+    "24107068": {
+        "Name": "Avijit",
+        "Branch": "Mech",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": null,
+        "Target CGPA": null
     }
 }
