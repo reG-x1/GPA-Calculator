@@ -57,5 +57,77 @@
         "SGPA": {},
         "CGPA": null,
         "Target CGPA": null
+    },
+    "240104062": {
+        "Name": "Rudra Goyal",
+        "Branch": "Ele",
+        "Batch": "2029",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 9.23,
+        "Target CGPA": null
+    },
+    "240104063": {
+        "Name": "Somay Kakkar",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 7.05,
+        "Target CGPA": null
+    },
+    "24104065": {
+        "Name": "Rudraksh Parsai",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 7.58,
+        "Target CGPA": null
+    },
+    "240104067": {
+        "Name": "Ayush Singh Bisht",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 9.33,
+        "Target CGPA": null
+    },
+    "240104068": {
+        "Name": "Darp Bhatt",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 8.75,
+        "Target CGPA": null
+    },
+    "240104075": {
+        "Name": "Kushagra Bhandari",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 8.55,
+        "Target CGPA": null
+    },
+    "240104080": {
+        "Name": "Ekash Verma",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 5.82,
+        "Target CGPA": null
+    },
+    "24104059": {
+        "Name": "Harshit Gupta",
+        "Branch": "Ele",
+        "Batch": "2028",
+        "Grades": {},
+        "SGPA": {},
+        "CGPA": 9.99,
+        "Target CGPA": null
     }
 }

@@ -293,7 +293,7 @@ class Student(Record):
             print()
 
             if choice == "1":
-                pass
+                self.view_grades()
             elif choice == "2":
                 try:
                     target_cg = float(input("Enter your target CGPA: "))
@@ -309,7 +309,6 @@ class Student(Record):
             else:
                 print("Invalid Option! Choose a number from 1 to 4")
             print("="*45)
-
 
     def _Student_shell(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -410,10 +409,96 @@ class Student(Record):
         print("="*45)
 
     def view_grades(self):
-        pass 
+        StudentRecord = self._file_opening("StudentRecord.json")
+        CourseDict = self._file_opening("CourseDict.json")
+        creds = CourseDict[self.batch][self.branch]
+        grades = StudentRecord[self.sid]["Grades"]
+
+        print("="*45)
+        print(" "*16+"GRADE REPORT") 
+        print("="*45)
+        
+        for sem in grades:
+            print(f"{sem.upper()}"+" "*31 +f"SGPA: {StudentRecord[self.sid]["SGPA"][sem]}")
+            i=0
+            for sub,grade in grades[sem].items():
+                i+=1
+                print(f"{i}. {sub:<15}:{grade:<2}"+" "*22+f":{creds[sem][sub]}")
+            print("-"*45)
+        print(" "*13 + "End of Grade Report")
+        print("="*45)
     
     def Rankings(self):
-        pass
+        StudentRecord = self._file_opening("StudentRecord.json")
+
+        rank_list = []
+        print("(Enter your branch/batch or press [ENTER] for overall ranking)")
+        batch_choice = input("Select batch: ")
+        branch_choice = input("Select branch: ")
+
+        for sid,data in StudentRecord.items():
+            if data["CGPA"] == None:
+                data["CGPA"] = 0.0            
+            stud = {"Name":data["Name"],
+                    "SID":sid,
+                    "branch":data["Branch"],
+                    "batch":data["Batch"],
+                    "CGPA":data["CGPA"]}
+            
+            if batch_choice == "":
+                pass
+            elif batch_choice != data["Batch"]:
+                continue
+            if branch_choice == "":
+                pass
+            elif branch_choice != data["Branch"]:
+                pass
+
+            rank_list.append(stud)
+
+        def merge_sort(arr):                                    # time complexity: O(n) = n logn
+            n = len(arr)                                        # Space complexity: O(n) = n
+            if n >1 :
+                mid = n // 2
+                left = arr[:mid]
+                right = arr[mid:]
+                merge_sort(left)
+                merge_sort(right)
+                i, j, k = 0,0,0                                
+                while i < len(left) and j < len(right):
+                    if left[i]["CGPA"] <= right[j]["CGPA"]:
+                        arr[k] = left[i]
+                        i +=1
+                        k +=1
+                    elif right[j]["CGPA"] < left[i]["CGPA"]:
+                        arr[k] = right[j]
+                        j +=1
+                        k +=1
+                while i < len(left):
+                    arr[k] = left[i]
+                    i +=1
+                    k +=1
+                while j < len(right):
+                    arr[k] = right[j]
+                    j +=1
+                    k +=1
+            return arr        
+        ranked_list = merge_sort(rank_list)
+        ranked_list.reverse()
+
+        print("="*45)
+        print(" "*18 +"RANKINGS")
+        print("="*45)
+        print("Rank"+" "*2+"Name"+" "*20+"Batch"+" "*6+"CGPA")
+        i = 0
+        for ele in ranked_list:
+            i +=1
+            if ele["SID"] == self.sid:
+                print("-"*45)
+            print(f"{i:>2}.   {ele["Name"]:<20}  {ele["branch"]:<4} {ele["batch"]}    {ele["CGPA"]:.2f}")
+            if ele["SID"] == self.sid:
+                print("-"*45)
+        print("="*45)
     
     def gpa_calculate(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -455,8 +540,10 @@ class Student(Record):
     def gpa_prediction(self):
         pass
 
+
+
+s0 = Student("Harshit Gupta",24104059,"Ele",2028)
 s1 = Student("Naveen Kumar",24104101,"Ele",2028)
 s2 = Student("Avijit", 24107068,"Mech",2028)
 
-
-s1.StudentInfo()
+s1.menu()
