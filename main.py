@@ -21,12 +21,14 @@ class Record:
         rem_branch_data = self._finding_missing_sems(CourseDict,branch,batch,sem)      # HELPER 3
         
         if not rem_branch_data:
+            self._box_header("ADD COURSE DATA")
             print(f"\nAll courses already registered for {branch} {batch}!")
             print("(switch to mode1 to view or mode3 to edit the Course details.)")
             print("-"*40)
             return
         
-        print(f"\nAdding Course details for {self.branch} {self.batch}:\n")
+        self._box_header("ADD COURSE DATA")
+        print(f"Adding Course details for {self.branch} {self.batch}:\n")
         print("(press ENTER on a blank course to save and jump to next.)")    
 
         for missing_sem in rem_branch_data:
@@ -34,14 +36,18 @@ class Record:
             course_list = []
             cred_list = []
 
-            print(f"\nEntering {missing_sem.upper()} details:")
+            self._section(f"Entering {missing_sem.upper()} details:")
             while True:
                 i +=1
                 new_course = input(f"Course {i}: ")
                 if new_course == '':
                     break
-                course_credit = int(input("Credit: "))
-
+                while True:
+                    try:
+                        course_credit = int(input("Credit: "))
+                        break
+                    except ValueError:
+                        print("Invalid Credit! Please Enter a whole number (eg. 1,2,3,4...)")
                 course_list.append(new_course)
                 cred_list.append(course_credit)
             
@@ -49,6 +55,7 @@ class Record:
             CourseDict[batch][branch][missing_sem] = new_course_dict
 
             self._file_writing(CourseDict,"CourseDict.json")
+        self._box_footer()
 
     def edit_course_data(self,target_sem = None):
 
@@ -61,8 +68,8 @@ class Record:
         sem_to_edit = CourseDict[self.batch][self.branch][target_sem]
 
         i = 0
-        print(f"============ Editing {target_sem.upper()} ============")
-        print("\n(Press ENTER to skip or anything else to edit the current)")
+        self._box_header(f"ECIT {target_sem.upper()}")
+        print("(Press ENTER to skip or anything else to edit the current)")
         for (sub,cred) in list(sem_to_edit.items()):
             i+=1
             change = False
@@ -77,7 +84,7 @@ class Record:
 
                 if new_key != "":
                     change = True
-                    # code block to chnage the key in dictionary
+
                     old_cred = sem_to_edit.pop(sub)
                 else:
                     new_key = sub
@@ -98,7 +105,7 @@ class Record:
                 continue
 
         self._file_writing(CourseDict,"CourseDict.json")
-        print("-"*35)
+        self._box_footer()
         
     def deducing_sems(self):
         grad_year = int(self.batch)                   # graduating year
@@ -169,6 +176,17 @@ class Record:
         
         return rem_branch_data     
 
+    def _box_header(self,title):
+        print("\n" + "="*45)
+        print(title.center(45))
+        print("="*45)
+    
+    def _box_footer(self):
+        print("="*45)
+
+    def _section(self,title):
+        print(f"\n{title}")
+        print("-"*45)
 
 class Student(Record):
     def __init__(self,name,sid:int,branch,batch):
@@ -176,86 +194,92 @@ class Student(Record):
         self.sid = str(sid)
 
     def __str__(self):
-        self.StudentInfo()
+        return f"{self.name} ({self.sid}) - {self.branch} {self.batch}"
  
     def menu(self):
-        print(f"\n" + "="*20  + " HOME " + "="*20)
-        print(f"Select from the following modes:")
+        while True:
+            self._box_header("HOME")
+            print(f"Select from the following modes:")
 
-        print("\n[ COURSE MANAGEMENT ]")
-        print("1. View Course Info")
-        print("2. Add Course Info")
-        print("3. Edit Course Info")
+            print("\n[ COURSE MANAGEMENT ]")
+            print("1. View Course Info")
+            print("2. Add Course Info")
+            print("3. Edit Course Info")
 
-        print("\n[ Student & Grades ]")
-        print("4. View Student Profile")
-        print("5. Add Grades")
-        print("6. Edit Grades")
+            print("\n[ Student & Grades ]")
+            print("4. View Student Profile")
+            print("5. Add Grades")
+            print("6. Edit Grades")
 
-        print("\n[ Analytics & Progress ]")
-        print("7. View Rankings (coming soon)")
-        print("8. Future GPA Chart (coming soon)")
-        
-        print("\n9. Exit")
-        print("="*46 + "\n")
-        
-        try:
-            mode = int(input("Enter the mode: "))
-
-            if mode == 1:
-                self.CourseInfo()
-
-            elif mode == 2:
-                print("-"*40)
-                self.add_course_data()
-
-            elif mode == 3:
-                self.edit_course_data()
-                
-            elif mode == 4:
-                self.StudentInfo()
-                self.gpa_calculate()
-
-            elif mode == 5:
-                self.add_grades()
-                self.gpa_calculate()
-
-            elif mode == 6:
-                self.edit_grades()
-
-            elif mode == 7:
-                self.Rankings()
-
-            elif mode == 8:
-                self.gpa_prediction()
-
-            elif mode == 9:
-                print("\nThanks for visiting!")
+            print("\n[ Analytics & Progress ]")
+            print("7. View Rankings (coming soon)")
+            print("8. Future GPA Chart (coming soon)")
             
-            else:
-                print("MODE NOT FOUND!!!")
-                print("No such modes available, please select from the availabe modes.\n")
-                self.menu()
-        except ValueError:
-            print("INVALID INPUT!!!Please enter a number to choose from the available modes.\n")
+            print("\n9. Exit")
+            self._box_footer()
+            
+            try:
+                mode = int(input("Enter the mode: "))
+
+                if mode == 1:
+                    print("="*45)
+                    print(" "*12 +"COURSE DETAILS")
+                    print("="*45)
+                    self.CourseInfo()
+                    print("="*45)
+
+                elif mode == 2:
+                    print("-"*40)
+                    self.add_course_data()
+
+                elif mode == 3:
+                    self.edit_course_data()
+                    
+                elif mode == 4:
+                    self.StudentInfo()
+                    self.gpa_calculate()
+
+                elif mode == 5:
+                    self.add_grades()
+                    self.gpa_calculate()
+
+                elif mode == 6:
+                    self.edit_grades()
+
+                elif mode == 7:
+                    self.Rankings()
+
+                elif mode == 8:
+                    self.gpa_prediction()
+
+                elif mode == 9:
+                    print("\nThanks for visiting!")
+                
+                else:
+                    print("MODE NOT FOUND!!!")
+                    print("No such modes available, please select from the availabe modes.\n")
+                    self.menu()
+            except ValueError:
+                print("INVALID INPUT!!!Please enter a number to choose from the available modes.\n")
             self.menu()
             
     def CourseInfo(self):
+        self._box_header("COURSE DETAILS")
         try:
             CourseDict = self._file_opening("CourseDict.json")
 
             req_data = CourseDict[str(self.batch)][self.branch]
 
-            print("-"*40)
-            print(f"Viewing Course details for {self.branch} {self.batch}:\n")
+            print(f"Branch: {self.branch} {self.batch}:\n")
             for sem_name, courses in req_data.items():
-                print(f"======== {sem_name.upper()} ========")
+                self._section(sem_name.upper())
                 for course_name,credits in courses.items():
-                    print(f"  {course_name:<16} | {credits}")
+                    print(f"  {course_name:<20}{credits:>5}")
                 print()
             print("-"*40)
         except KeyError:
             print(f"No Data Availabe.\n(Switch to Mode 2 to add course details.)")
+        self._box_footer()
 
     def StudentInfo(self):
         sid = self.sid
@@ -263,9 +287,7 @@ class Student(Record):
         user = StudentRecord[sid]
 
         while True:
-            print("="*45)
-            print(" "*14+"STUDENT DASHBOARD")
-            print("="*45)
+            self._box_header("STUDENT DASHBOARD")
 
             print(f"Name          : {user["Name"]}")
             print(f"SID           : {self.sid}")
@@ -282,9 +304,9 @@ class Student(Record):
             else:
                 for sem,sg in user["SGPA"].items():                
                     print(f"{sem.upper()}: {sg}")
-            print("="*45)
+            self._box_footer()
 
-            print(" "*18 +"MINI MENU")
+            self._section("MINI MENU")
             print(f"[1] View Detailed Semester Grades")
             print(f"[2] Set 'Target CGPA'")
             print(f"[3] Return Main Menu")
@@ -322,13 +344,7 @@ class Student(Record):
                 "CGPA":None,
                 "Target CGPA":None
                 }
-        try:  
-            with open("StudentRecord.tmp",'w') as f:
-                json.dump(StudentRecord,f,indent=4)
-            os.replace("StudentRecord.tmp","StudentRecord.json")
-        except Exception as e:
-            print(f"Critical ERROR!! Could not save Student record.")
-            print(f"Reason: {e}")
+        self._file_writing(StudentRecord,"StudentRecord.json")
 
         return StudentRecord
 
@@ -341,12 +357,13 @@ class Student(Record):
         all_sem_data = CourseDict[batch][branch]
         new_grades_added = False
 
+        self._box_header("ADD GRADES")
         for sem in all_sem_data:
             if sem not in StudentRecord[self.sid]["Grades"]:
                 StudentRecord[self.sid]["Grades"][sem] = {}
 
             if StudentRecord[self.sid]["Grades"][sem] == {}:
-                print(f"\n===== {sem.upper()} GRADES =====")
+                self._section(f"{sem.upper()} GRADES")
                 choice = input(f"Enter grades for {sem} now? (Y/N): ").strip().upper()
 
                 if choice != "Y":
@@ -367,7 +384,8 @@ class Student(Record):
 
         else:
             print("\nAll sem grades are already saved.")
-            print("(switch to mode 5 to edit existing grades)")
+            print("(switch to mode 6 to edit existing grades)")
+        self._box_footer()
 
     def edit_grades(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -378,6 +396,7 @@ class Student(Record):
             print(f"ERROR! No grades found for {target_sem}.")
             return
 
+        self._box_header(f"UPDATE GRADES - {target_sem.upper()}")
         print("\n"+"="*20 + f" UPDATING GRADES for {target_sem.upper()} "+"="*20)
         print("(press ENTER to skip and anything else to edit the current)\n")
         i =0
@@ -406,7 +425,7 @@ class Student(Record):
             print(f"Grades updated for {target_sem}...")
         else:
             print("No updates were made.")
-        print("="*45)
+        self._box_footer()
 
     def view_grades(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -414,9 +433,7 @@ class Student(Record):
         creds = CourseDict[self.batch][self.branch]
         grades = StudentRecord[self.sid]["Grades"]
 
-        print("="*45)
-        print(" "*16+"GRADE REPORT") 
-        print("="*45)
+        self._box_header("GRADE REPORT")
         
         for sem in grades:
             print(f"{sem.upper()}"+" "*31 +f"SGPA: {StudentRecord[self.sid]["SGPA"][sem]}")
@@ -426,7 +443,7 @@ class Student(Record):
                 print(f"{i}. {sub:<15}:{grade:<2}"+" "*22+f":{creds[sem][sub]}")
             print("-"*45)
         print(" "*13 + "End of Grade Report")
-        print("="*45)
+        self._box_footer()
     
     def Rankings(self):
         StudentRecord = self._file_opening("StudentRecord.json")
@@ -452,7 +469,7 @@ class Student(Record):
             if branch_choice == "":
                 pass
             elif branch_choice != data["Branch"]:
-                pass
+                continue
 
             rank_list.append(stud)
 
@@ -486,9 +503,7 @@ class Student(Record):
         ranked_list = merge_sort(rank_list)
         ranked_list.reverse()
 
-        print("="*45)
-        print(" "*18 +"RANKINGS")
-        print("="*45)
+        self._box_header("RANKINGS")
         print("Rank"+" "*2+"Name"+" "*20+"Batch"+" "*6+"CGPA")
         i = 0
         for ele in ranked_list:
@@ -498,7 +513,7 @@ class Student(Record):
             print(f"{i:>2}.   {ele["Name"]:<20}  {ele["branch"]:<4} {ele["batch"]}    {ele["CGPA"]:.2f}")
             if ele["SID"] == self.sid:
                 print("-"*45)
-        print("="*45)
+        self._box_footer()
     
     def gpa_calculate(self):
         StudentRecord = self._file_opening("StudentRecord.json")
