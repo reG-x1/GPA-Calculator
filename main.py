@@ -212,7 +212,7 @@ class Student(Record):
             print("6. Edit Grades")
 
             print("\n[ Analytics & Progress ]")
-            print("7. View Rankings (coming soon)")
+            print("7. View Rankings")
             print("8. Future GPA Chart (coming soon)")
             
             print("\n9. Exit")
